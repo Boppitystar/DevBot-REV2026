@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AlignToTagRelative;
+import frc.robot.commands.NewAlignToTagRelative;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -76,8 +76,8 @@ public class RobotContainer {
    // mDriverController.y()
     //  .onTrue(new AlignToTagRelative(false, mDriveSubsystem).withTimeout(3));
     
-    //mDriverController.x()
-      //.onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
+    mDriverController.x()
+    .onTrue(new NewAlignToTagRelative(mDriveSubsystem).withTimeout(3));
 
     
   }
