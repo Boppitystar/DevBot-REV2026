@@ -8,22 +8,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
-public class AlignToTagRelative extends Command {
+public class NewAlignToTagRelative extends Command {
   
   private PIDController mXController, mYController, mRotController;
   private boolean isRightScore;
   private Timer dontSeeTagTimer, stopTimer;
   private DriveSubsystem mDrivebase;
-  private double tagID = -1;
-
+  private VisionSubsystem mVisionSubsystem;
   //command requires left or right side of april tag 
-  public AlignToTagRelative(boolean isRightScore, DriveSubsystem Drivebase) {
+  public NewAlignToTagRelative(DriveSubsystem Drivebase) {
     mXController = new PIDController(Constants.AutoConstants.X_TAG_ALIGNMENT_P, 0.0, 0);  // Vertical movement
     mYController = new PIDController(Constants.AutoConstants.Y_TAG_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
     mRotController = new PIDController(Constants.AutoConstants.ROT_TAG_ALIGNMENT_P, 0, 0);  // Rotation
    
-    this.isRightScore = isRightScore; 
     this.mDrivebase = Drivebase;
     addRequirements(mDrivebase); //only one drive subsystem instanstiated 
   }
@@ -47,36 +46,13 @@ public class AlignToTagRelative extends Command {
     : -Constants.AutoConstants.Y_SETPOINT_TAG_ALIGNMENT);
     mYController.setTolerance(Constants.AutoConstants.Y_TOLERANCE_TAG_ALIGNMENT);
 
-    tagID = LimelightHelpers.getFiducialID("");
   }
 
   @Override
   public void execute() {
-    if (LimelightHelpers.getTV("") && LimelightHelpers.getFiducialID("") == tagID) {
-      this.dontSeeTagTimer.reset();
+    double turn = mVisionSubsystem.getTurnNeed();
+    mDrivebase.driveChassisSpeeds(0,0, turn, true);
 
-      double[] positions = LimelightHelpers.getBotPose_TargetSpace("");
-      SmartDashboard.putNumber("x", positions[2]);
-
-      //PID controllers for position to speed 
-      double xOutput = mXController.calculate(positions[2]);
-      double yOutput = -mYController.calculate(positions[0]);
-      double rotOutput= -mRotController.calculate(positions[4]); //TODO:test why they are negative  
-      
-      SmartDashboard.putNumber("xspeed", xOutput);
-
-      //TODO: feeds the drive method the controller output which is then clamped (theory can be wrong)
-      mDrivebase.driveChassisSpeeds(xOutput, yOutput, rotOutput, false);
-
-      //checks if aligned, if not restarts timer to restart process
-      if (!mRotController.atSetpoint() || !mYController.atSetpoint() || !mXController.atSetpoint()) {
-        stopTimer.reset();
-      }
-      } else {
-        mDrivebase.driveChassisSpeeds(0,0, 0, false);
-      }
-
-    SmartDashboard.putNumber("poseValidTimer", stopTimer.get());
   }
 
   @Override
