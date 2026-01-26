@@ -76,8 +76,8 @@ public class RobotContainer {
    // mDriverController.y()
     //  .onTrue(new AlignToTagRelative(false, mDriveSubsystem).withTimeout(3));
     
-    //mDriverController.x()
-      //.onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
+    mDriverController.x()
+      .onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
 
     
   }

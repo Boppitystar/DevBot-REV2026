@@ -60,13 +60,13 @@ public class AlignToTagRelative extends Command {
       SmartDashboard.putNumber("x", positions[2]);
 
       //PID controllers for position to speed 
-      double xOutput = mXController.calculate(positions[2]);
+      double xOutput = -mXController.calculate(positions[2]);
       double yOutput = -mYController.calculate(positions[0]);
       double rotOutput= -mRotController.calculate(positions[4]); //TODO:test why they are negative  
       
       SmartDashboard.putNumber("xspeed", xOutput);
 
-      //TODO: feeds the drive method the controller output which is then clamped (theory can be wrong)
+      //feeds the drive method the controller output which is then clamped (theory can be wrong)
       mDrivebase.driveChassisSpeeds(xOutput, yOutput, rotOutput, false);
 
       //checks if aligned, if not restarts timer to restart process

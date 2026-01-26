@@ -25,9 +25,9 @@ public final class Constants {
 
     //Chassis config - width, depth, CAN IDS and angular offset values in Designdoc.md
   
-    public static final double WHEEL_CENTER_WIDTH = Units.inchesToMeters(7.25);
+    public static final double WHEEL_CENTER_WIDTH = Units.inchesToMeters(6.5);
     // Distance between centers of right and left wheels on robot
-    public static final double WHEEL_CENTER_DEPTH = Units.inchesToMeters(7.25);
+    public static final double WHEEL_CENTER_DEPTH = Units.inchesToMeters(6.5);
     // Distance between front and back wheels on robot
     //depth/frontback distance from robot center to each wheel 
 
@@ -39,20 +39,20 @@ public final class Constants {
       
     //angular offsets of module relative to chassis (rad)
     public static final double FRONT_LEFT_CHASSIS_ANGULAR_OFFSET = Math.PI/2;
-    public static final double FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = 0;
-    public static final double BACK_LEFT_CHASSIS_ANGULAR_OFFSET = -Math.PI/2;
-    public static final double BACK_RIGHT_CHASSIS_ANGULAR_OFFSET = -Math.PI;
+    public static final double FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = Math.PI;
+    public static final double BACK_LEFT_CHASSIS_ANGULAR_OFFSET = 0;
+    public static final double BACK_RIGHT_CHASSIS_ANGULAR_OFFSET = -Math.PI/2;
     
     //SPARK MAX CAN IDs 
     public static final int FRONT_LEFT_DRIVING_CAN_ID = 5;
     public static final int FRONT_LEFT_TURNING_CAN_ID = 6;
 
     
-    public static final int FRONT_RIGHT_DRIVING_CAN_ID = 3;
-    public static final int FRONT_RIGHT_TURNING_CAN_ID = 4;
+    public static final int FRONT_RIGHT_DRIVING_CAN_ID = 7;
+    public static final int FRONT_RIGHT_TURNING_CAN_ID = 8;
     
-    public static final int BACK_LEFT_DRIVING_CAN_ID = 7;
-    public static final int BACK_LEFT_TURNING_CAN_ID = 8;
+    public static final int BACK_LEFT_DRIVING_CAN_ID = 3;
+    public static final int BACK_LEFT_TURNING_CAN_ID = 4;
    
     public static final int BACK_RIGHT_DRIVING_CAN_ID = 1;
     public static final int BACK_RIGHT_TURNING_CAN_ID = 2;
@@ -93,7 +93,7 @@ public final class Constants {
     public static final double X_SETPOINT_TAG_ALIGNMENT = -0.34;  // Vertical pose and tolerance 
     public static final double X_TOLERANCE_TAG_ALIGNMENT = 0.02;
 
-    public static final double Y_SETPOINT_TAG_ALIGNMENT = 0.16;  // Horizontal pose (- for diff sides of tag)
+    public static final double Y_SETPOINT_TAG_ALIGNMENT = 17.52;  // Horizontal pose (- for diff sides of tag)
     public static final double Y_TOLERANCE_TAG_ALIGNMENT = 0.02; 
 
     public static final double DONT_SEE_TAG_WAIT_TIME = 1;
