@@ -10,6 +10,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -21,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Constants.AutoConstants;
 
 import frc.robot.Constants.DriveConstants;
 
@@ -46,6 +48,8 @@ public class DriveSubsystem extends SubsystemBase {
     DriveConstants.BACK_RIGHT_DRIVING_CAN_ID,
     DriveConstants.BACK_RIGHT_TURNING_CAN_ID,
     DriveConstants.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET);
+  private boolean HeadingPIDEngaged = false;
+  private PIDController mHeadingController;
 
   //mGyro sensor/IMU (usb input type to roborio)
   private final AHRS mGyro = new AHRS(NavXComType.kUSB1); 
@@ -63,6 +67,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   
   public DriveSubsystem() {
+    mHeadingController = new PIDController(0.1, 0, 0);
+    mHeadingController.setSetpoint(0);
+    mHeadingController.setTolerance(AutoConstants.ROT_TOLERANCE_TAG_ALIGNMENT);
     //usage reporting for MAXSwerve template 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
   }
@@ -103,14 +110,23 @@ public class DriveSubsystem extends SubsystemBase {
         },
         pose);
   }
+  public double HeadingPID(double targetHeading) {
+      double RotOutput = mHeadingController.calculate(targetHeading);
+      return RotOutput;
+  }
 
   public void driveJoystick(double xJoystick, double yJoystick, double rotJoystick, boolean fieldRelative) {
     
     //convert joystick input (-1, 1) to m/s for drivetrain 
     double xSpeedDelivered = xJoystick * DriveConstants.MAX_SPEED_METERS_PER_SECOND; 
     double ySpeedDelivered = yJoystick * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
-    double rotDelivered = rotJoystick * DriveConstants.MAX_ANGULAR_SPEED;
+    double rotDelivered;
+    if (HeadingPIDEngaged){
+      rotDelivered = HeadingPID(0);
 
+    } else {
+      rotDelivered = rotJoystick * DriveConstants.MAX_ANGULAR_SPEED;
+    }
     driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
   }
 
@@ -205,5 +221,16 @@ public class DriveSubsystem extends SubsystemBase {
         zeroHeading();
       });
   }
-  
+  public Command HeadingPIDenable(){
+    return run(
+      () -> {
+        HeadingPIDEngaged = true;
+      });
+  }
+  public Command HeadingPIDdisable(){
+    return run(
+      () -> {
+        HeadingPIDEngaged = false;
+      });
+  }
 }

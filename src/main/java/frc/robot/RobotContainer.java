@@ -71,6 +71,9 @@ public class RobotContainer {
     //zero gyro
     mDriverController.start()
       .whileTrue(mDriveSubsystem.resetGyro()); 
+    mDriverController.y()
+      .onTrue(mDriveSubsystem.HeadingPIDenable())
+      .onFalse(mDriveSubsystem.HeadingPIDdisable());
 
     //schedule align to robot relative command when left bumper is pressed
    // mDriverController.y()
