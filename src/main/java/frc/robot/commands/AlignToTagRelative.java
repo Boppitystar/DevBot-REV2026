@@ -67,7 +67,7 @@ public class AlignToTagRelative extends Command {
       SmartDashboard.putNumber("xspeed", xOutput);
 
       //feeds the drive method the controller output which is then clamped (theory can be wrong)
-      mDrivebase.driveChassisSpeeds(xOutput, yOutput, rotOutput, false);
+      mDrivebase.driveChassisSpeeds(-xOutput, yOutput, rotOutput, false);
 
       //checks if aligned, if not restarts timer to restart process
       if (!mRotController.atSetpoint() || !mYController.atSetpoint() || !mXController.atSetpoint()) {

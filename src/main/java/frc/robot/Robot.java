@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.LimelightHelpers.LimelightResults;
+
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -42,6 +45,13 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    double omegaRps = Units.degreesToRotations(m_robotContainer.mDriveSubsystem.getTurnRate());
+    var LimelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
+    if (LimelightMeasurement != null && LimelightMeasurement.tagCount > 0 && Math.abs(omegaRps) < 20){
+        m_robotContainer.mDriveSubsystem.resetOdometry(LimelightMeasurement.pose);
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

@@ -21,7 +21,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -49,6 +50,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   //mGyro sensor/IMU (usb input type to roborio)
   private final AHRS mGyro = new AHRS(NavXComType.kUSB1); 
+
+  private final Field2d field2d = new Field2d();
 
   //Odometry class for tracking robot pose 
   SwerveDriveOdometry Odometry = new SwerveDriveOdometry(
@@ -78,7 +81,12 @@ public class DriveSubsystem extends SubsystemBase {
             mBackLeft.getPosition(),
             mBackRight.getPosition()
         });
-  }
+
+   //adding field map to smart dashboard 
+    //TODO: change to elastic 
+    field2d.setRobotPose(Odometry.getPoseMeters());
+    SmartDashboard.putData(field2d);
+      }
 
   /**
    * Returns the currently-estimated pose of the robot.

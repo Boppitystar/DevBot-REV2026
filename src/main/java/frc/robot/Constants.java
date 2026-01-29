@@ -20,8 +20,8 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static final class DriveConstants{ 
     //allowed max speeds
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
-    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; //rad/s 
+    public static final double MAX_SPEED_METERS_PER_SECOND = 1; // TODO: after test change back to 4.8 and 2pi;
+    public static final double MAX_ANGULAR_SPEED =  Math.PI; // rad/s 
 
     //Chassis config - width, depth, CAN IDS and angular offset values in Designdoc.md
   
@@ -83,17 +83,17 @@ public final class Constants {
 
   public static final class AutoConstants {
     //add constants here that are not in pathplanner/limelight if needed
-    public static final double X_TAG_ALIGNMENT_P = 0.1; //TODO: tune limelight pid  
+    public static final double X_TAG_ALIGNMENT_P = 0.01; //TODO: tune limelight pid  
     public static final double Y_TAG_ALIGNMENT_P = 0.1; 
     public static final double ROT_TAG_ALIGNMENT_P = 0.1; 
 
     public static final double ROT_SETPOINT_TAG_ALIGNMENT = 0;  // Rotation
     public static final double ROT_TOLERANCE_TAG_ALIGNMENT = 1;
     
-    public static final double X_SETPOINT_TAG_ALIGNMENT = -0.34;  // Vertical pose and tolerance 
+    public static final double X_SETPOINT_TAG_ALIGNMENT = 9.79;  // Vertical pose and tolerance 
     public static final double X_TOLERANCE_TAG_ALIGNMENT = 0.02;
 
-    public static final double Y_SETPOINT_TAG_ALIGNMENT = 17.52;  // Horizontal pose (- for diff sides of tag)
+    public static final double Y_SETPOINT_TAG_ALIGNMENT = -0.19;  // Horizontal pose (- for diff sides of tag)
     public static final double Y_TOLERANCE_TAG_ALIGNMENT = 0.02; 
 
     public static final double DONT_SEE_TAG_WAIT_TIME = 1;

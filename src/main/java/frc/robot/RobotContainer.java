@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final DriveSubsystem mDriveSubsystem = new DriveSubsystem(); 
+  public final DriveSubsystem mDriveSubsystem = new DriveSubsystem(); 
 
   private final CommandXboxController mDriverController =
     new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER);
@@ -43,9 +43,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick. field relative set true/false 
         new RunCommand(
             () -> mDriveSubsystem.driveJoystick(
-                MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND),
-                MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND),
-                MathUtil.applyDeadband(mDriverController.getRightX(), OperatorConstants.DRIVE_DEADBAND),
+                -MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND),
+                -MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND),
+                -MathUtil.applyDeadband(mDriverController.getRightX(), OperatorConstants.DRIVE_DEADBAND),
                 false),
             mDriveSubsystem));
   }
@@ -72,12 +72,25 @@ public class RobotContainer {
     mDriverController.start()
       .whileTrue(mDriveSubsystem.resetGyro()); 
 
+    //autorotate to align with crosshair of tag 
+    mDriverController.leftBumper()
+    .whileTrue(new RunCommand(
+      () -> mDriveSubsystem.driveJoystick(
+          -mDriverController.getLeftY(), 
+          //LimelightHelpers.getTY("limelight")*-0.1, 
+          -mDriverController.getLeftX(), 
+          LimelightHelpers.getTX("limelight")* - 0.05, 
+          false
+        ), mDriveSubsystem
+    ));
+
+    
     //schedule align to robot relative command when left bumper is pressed
    // mDriverController.y()
     //  .onTrue(new AlignToTagRelative(false, mDriveSubsystem).withTimeout(3));
     
-    mDriverController.x()
-      .onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
+    ///mDriverController.x()
+      //.onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
 
     
   }
