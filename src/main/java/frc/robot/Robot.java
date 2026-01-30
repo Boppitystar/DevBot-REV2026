@@ -46,10 +46,10 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    double omegaRps = Units.degreesToRotations(m_robotContainer.mDriveSubsystem.getTurnRate());
+    double robotRps = Units.degreesToRotations(m_robotContainer.mDriveSubsystem.getTurnRate());
     var LimelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
-    if (LimelightMeasurement != null && LimelightMeasurement.tagCount > 0 && Math.abs(omegaRps) < 20){
+    if (LimelightMeasurement != null && LimelightMeasurement.tagCount > 0 && Math.abs(robotRps) < 20){ //see LL and rps low
         m_robotContainer.mDriveSubsystem.resetOdometry(LimelightMeasurement.pose);
     }
   }
@@ -89,7 +89,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    
+
+  }
 
   @Override
   public void testInit() {

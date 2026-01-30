@@ -10,7 +10,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
-
+import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -29,6 +29,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public final DriveSubsystem mDriveSubsystem = new DriveSubsystem(); 
+  public final VisionSubsystem mVisionSubsystem = new VisionSubsystem(); 
 
   private final CommandXboxController mDriverController =
     new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER);
@@ -45,7 +46,7 @@ public class RobotContainer {
             () -> mDriveSubsystem.driveJoystick(
                 -MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND),
                 -MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND),
-                -MathUtil.applyDeadband(mDriverController.getRightX(), OperatorConstants.DRIVE_DEADBAND),
+                MathUtil.applyDeadband(mDriverController.getRightX(), OperatorConstants.DRIVE_DEADBAND),
                 false),
             mDriveSubsystem));
   }
@@ -65,7 +66,7 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     //schedule defense position when driver controller right bumper is pressed 
-    mDriverController.rightBumper()
+    mDriverController.leftTrigger()
       .whileTrue(mDriveSubsystem.defensePosition());
     
     //zero gyro
@@ -79,10 +80,13 @@ public class RobotContainer {
           -mDriverController.getLeftY(), 
           //LimelightHelpers.getTY("limelight")*-0.1, 
           -mDriverController.getLeftX(), 
-          LimelightHelpers.getTX("limelight")* - 0.05, 
+          LimelightHelpers.getTX("limelight")* 0.2, 
           false
         ), mDriveSubsystem
     ));
+
+    mDriverController.rightBumper()
+      .whileTrue(mVisionSubsystem.estimateDistanceToHub());
 
     
     //schedule align to robot relative command when left bumper is pressed

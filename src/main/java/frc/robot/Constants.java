@@ -100,6 +100,12 @@ public final class Constants {
 	  public static final double POSE_VALIDATION_TIME = 0.3;
   }
 
+  public static final class VisionConstants{
+   public static final double LL_MOUNT_ANGLE_DEG = 0; //a1: degrees rotated up from vertical 
+   public static final double LL_LENS_HEIGHT_IN = 7.1; //h1: distance from lens to floor 
+   public static final double TARGET_HEIGHT_IN = 12.5;//44.25; //h2: height of target 
+  }
+
   public static final class MotorConstants {
     public static final double FREE_SPEED_RPM = 5676;
   }
