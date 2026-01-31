@@ -1,16 +1,38 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.VisionConstants;;
+import limelight.Limelight;
+import limelight.networktables.LimelightPoseEstimator;
+import limelight.networktables.Orientation3d;
+import limelight.networktables.LimelightPoseEstimator.EstimationMode;
+import limelight.networktables.LimelightSettings.LEDMode;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class VisionSubsystem extends SubsystemBase {
 
+
+    public Limelight limelight; 
+
+    private LimelightPoseEstimator poseEstimator;
+
     public VisionSubsystem(){ 
+      limelight = new Limelight("limelight");
+     
+      // Set the limelight to use Pipeline LED control, with the Camera offset of 0, and save.
+      limelight.getSettings()
+         .withLimelightLEDMode(LEDMode.PipelineControl)
+         .withCameraOffset(Pose3d.kZero)
+         .save();
+
+      poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+
     }
 
     public void getDistanceToHub(){
@@ -39,7 +61,6 @@ public class VisionSubsystem extends SubsystemBase {
     
     @Override
     public void periodic(){
-        
     }
     
 }
