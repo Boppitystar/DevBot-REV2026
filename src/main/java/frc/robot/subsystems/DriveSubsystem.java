@@ -111,7 +111,7 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
   public double HeadingPID(double targetHeading) {
-      double RotOutput = mHeadingController.calculate(targetHeading);
+      double RotOutput = mHeadingController.calculate(getHeading(), targetHeading);
       return RotOutput;
   }
 
