@@ -1,6 +1,7 @@
 package frc.robot.commands; 
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.kinematics.Odometry;
 //import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
+
 import frc.robot.subsystems.VisionSubsystem;
 
 public class NewAlignToTagRelative extends Command {
@@ -50,9 +53,42 @@ public class NewAlignToTagRelative extends Command {
 
   @Override
   public void execute() {
-    double turn = mVisionSubsystem.getTurnNeed();
-    mDrivebase.driveChassisSpeeds(0,0, turn, true);
-
+    boolean doRejectUpdate = false;
+    Pose2d pose = mDrivebase.getPose();
+    System.out.println(pose.getX());
+    System.out.println(pose.getY());
+    /*LimelightHelpers.SetRobotOrientation("limelight", m_gyro.getAngle(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
+      Pose2d pose = mt2.pose;
+      if(Math.abs(m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      {
+        doRejectUpdate = true;
+      }
+      if(mt2.tagCount == 0)
+      {
+        doRejectUpdate = true;
+      }
+      if(!doRejectUpdate)
+      {
+        /*m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        m_poseEstimator.addVisionMeasurement(
+            mt2.pose,
+            mt2.timestampSeconds);
+      }
+      System.out.println(pose.getX());
+      System.out.println(pose.getY());
+    double robotx = pose.getX();
+    double roboty = pose.getY();
+    double hubx = 4.6228 - robotx;
+    System.out.println(hubx);
+    System.out.println(huby);
+    double huby = 4.064 - roboty;
+    double fieldheading = Math.atan2(huby, hubx);
+    System.out.println(fieldheading);
+    System.out.println(m_gyro.getAngle());
+    double turnneed = fieldheading + m_gyro.getAngle();
+    System.out.println(turnneed);
+    return turnneed;*/
   }
 
   @Override
