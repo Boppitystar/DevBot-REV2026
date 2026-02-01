@@ -121,9 +121,11 @@ public class DriveSubsystem extends SubsystemBase {
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
       Pose2d posee = mt2.pose;
       if(mt2.tagCount == 1 || mt2.tagCount == 2) {
-
-      System.out.println(posee.getX());
-      System.out.println(posee.getY()); }
+      double x = posee.getX();
+      double y = posee.getY();
+      double fieldangle = Math.atan2(y, x);
+      double turnneed = Math.toDegrees(fieldangle + Math.toRadians(mGyro.getAngle()));
+      System.out.println(turnneed); }
   }
 
   public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
