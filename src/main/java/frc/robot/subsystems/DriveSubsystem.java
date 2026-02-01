@@ -116,7 +116,7 @@ public class DriveSubsystem extends SubsystemBase {
     driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
   }
   public void getTurn() {
-    LimelightHelpers.SetRobotOrientation("limelight", mGyro.getAngle(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
       Pose2d posee = mt2.pose;
       if(mt2.tagCount == 1 || mt2.tagCount == 2) {
@@ -125,7 +125,7 @@ public class DriveSubsystem extends SubsystemBase {
       double hubx = 4.6228 - x;
     double huby = 4.064 - y;
     double fieldheading = Math.atan2(huby, hubx);
-    double turnneed = fieldheading - mGyro.getAngle();
+    double turnneed = fieldheading + mGyro.getAngle();
     System.out.println(turnneed); 
     
    } 
