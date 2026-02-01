@@ -110,9 +110,19 @@ public class DriveSubsystem extends SubsystemBase {
     double xSpeedDelivered = xJoystick * DriveConstants.MAX_SPEED_METERS_PER_SECOND; 
     double ySpeedDelivered = yJoystick * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
     double rotDelivered = rotJoystick * DriveConstants.MAX_ANGULAR_SPEED;
-
+    getTurn();
     driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
   }
+  public void getTurn() {
+    LimelightHelpers.SetRobotOrientation("limelight", -mGyro.getAngle(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
+      Pose2d posee = mt2.pose;
+      if(mt2.tagCount == 1 || mt2.tagCount == 2) {
+      double x = posee.getX();
+      double y = posee.getY();
+      double fieldangle = Math.atan2(y, x);
+      double turnneed = Math.toDegrees(fieldangle + Math.toRadians(mGyro.getAngle()));
+      System.out.println(turnneed); }
 
   public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
     // clamps speed to be within max/min range 
