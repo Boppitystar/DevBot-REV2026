@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers;
 
 public class DriveSubsystem extends SubsystemBase {
   //create 4 MAXSwerveModules 
@@ -78,6 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
             mBackLeft.getPosition(),
             mBackRight.getPosition()
         });
+        
   }
 
   /**
@@ -112,6 +114,16 @@ public class DriveSubsystem extends SubsystemBase {
     double rotDelivered = rotJoystick * DriveConstants.MAX_ANGULAR_SPEED;
 
     driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
+    Pose2d pose = getPose();
+    System.out.println(pose.getX());
+    System.out.println(pose.getY());
+    LimelightHelpers.SetRobotOrientation("limelight", mGyro.getAngle(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
+      Pose2d posee = mt2.pose;
+      if(mt2.tagCount == 1 || mt2.tagCount == 2) {
+
+      System.out.println(posee.getX());
+      System.out.println(posee.getY()); }
   }
 
   public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){

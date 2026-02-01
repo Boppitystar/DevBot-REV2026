@@ -1,5 +1,8 @@
 package frc.robot.commands; 
 
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.Odometry;
 //import edu.wpi.first.math.geometry.Translation2d;
@@ -25,7 +28,8 @@ public class NewAlignToTagRelative extends Command {
     mXController = new PIDController(Constants.AutoConstants.X_TAG_ALIGNMENT_P, 0.0, 0);  // Vertical movement
     mYController = new PIDController(Constants.AutoConstants.Y_TAG_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
     mRotController = new PIDController(Constants.AutoConstants.ROT_TAG_ALIGNMENT_P, 0, 0);  // Rotation
-   
+    final AHRS mGyro = new AHRS(NavXComType.kUSB1); 
+
     this.mDrivebase = Drivebase;
     addRequirements(mDrivebase); //only one drive subsystem instanstiated 
   }
@@ -54,12 +58,9 @@ public class NewAlignToTagRelative extends Command {
   @Override
   public void execute() {
     boolean doRejectUpdate = false;
-    Pose2d pose = mDrivebase.getPose();
-    System.out.println(pose.getX());
-    System.out.println(pose.getY());
-    /*LimelightHelpers.SetRobotOrientation("limelight", m_gyro.getAngle(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
-      Pose2d pose = mt2.pose;
+    
+  /* 
+
       if(Math.abs(m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;
