@@ -122,9 +122,11 @@ public class DriveSubsystem extends SubsystemBase {
       if(mt2.tagCount == 1 || mt2.tagCount == 2) {
       double x = posee.getX();
       double y = posee.getY();
-      double fieldangle = Math.atan2(y, x);
-      double turnneed = Math.toDegrees(fieldangle + Math.toRadians(mGyro.getAngle()));
-      System.out.println(turnneed); } }
+      double hubx = 4.6228 - x;
+    double huby = 4.064 - y;
+    double fieldheading = Math.atan2(huby, hubx);
+    double turnneed = fieldheading - mGyro.getAngle();
+    System.out.println(turnneed); } }
 
   public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
     // clamps speed to be within max/min range 
