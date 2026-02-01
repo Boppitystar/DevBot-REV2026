@@ -124,7 +124,7 @@ public class DriveSubsystem extends SubsystemBase {
       double y = posee.getY();
       double fieldangle = Math.atan2(y, x);
       double turnneed = Math.toDegrees(fieldangle + Math.toRadians(mGyro.getAngle()));
-      System.out.println(turnneed); }
+      System.out.println(turnneed); } }
 
   public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
     // clamps speed to be within max/min range 
