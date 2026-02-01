@@ -44,8 +44,8 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick. field relative set true/false 
         new RunCommand(
             () -> mDriveSubsystem.driveJoystick(
-                -MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND),
-                -MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND),
+                MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND),
+                MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND),
                 MathUtil.applyDeadband(mDriverController.getRightX(), OperatorConstants.DRIVE_DEADBAND),
                 false),
             mDriveSubsystem));
@@ -77,10 +77,10 @@ public class RobotContainer {
     mDriverController.leftBumper()
     .whileTrue(new RunCommand(
       () -> mDriveSubsystem.driveJoystick(
-          -mDriverController.getLeftY(), 
+          mDriverController.getLeftY(), 
           //LimelightHelpers.getTY("limelight")*-0.1, 
-          -mDriverController.getLeftX(), 
-          LimelightHelpers.getTX("limelight")* 0.2, 
+          mDriverController.getLeftX(), 
+          LimelightHelpers.getTX("limelight")* 0.15, 
           false
         ), mDriveSubsystem
     ));

@@ -20,7 +20,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static final class DriveConstants{ 
     //allowed max speeds
-    public static final double MAX_SPEED_METERS_PER_SECOND = 1; // TODO: after test change back to 4.8 and 2pi;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4; // TODO: after test change back to 4.8 and 2pi;
     public static final double MAX_ANGULAR_SPEED =  Math.PI; // rad/s 
 
     //Chassis config - width, depth, CAN IDS and angular offset values in Designdoc.md
