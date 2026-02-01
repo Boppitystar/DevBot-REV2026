@@ -125,7 +125,7 @@ public class DriveSubsystem extends SubsystemBase {
       double hubx = 4.6228 - x;
     double huby = 4.064 - y;
     double fieldheading = Math.atan2(huby, hubx);
-    double turnneed = fieldheading + mGyro.getAngle();
+    double turnneed = Math.toDegrees(fieldheading + mGyro.getAngle());
     System.out.println(turnneed); 
     
    } 
