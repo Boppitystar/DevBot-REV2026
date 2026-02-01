@@ -114,18 +114,9 @@ public class DriveSubsystem extends SubsystemBase {
     double rotDelivered = rotJoystick * DriveConstants.MAX_ANGULAR_SPEED;
 
     driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
-    Pose2d pose = getPose();
-    System.out.println(pose.getX());
-    System.out.println(pose.getY());
-    LimelightHelpers.SetRobotOrientation("limelight", -mGyro.getAngle(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
-      Pose2d posee = mt2.pose;
-      if(mt2.tagCount == 1 || mt2.tagCount == 2) {
-      double x = posee.getX();
-      double y = posee.getY();
-      double fieldangle = Math.atan2(y, x);
-      double turnneed = Math.toDegrees(fieldangle + Math.toRadians(mGyro.getAngle()));
-      System.out.println(turnneed); }
+
+    autoAlign(); //test 
+    
   }
 
   public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
@@ -150,6 +141,23 @@ public class DriveSubsystem extends SubsystemBase {
     mBackLeft.setDesiredState(swerveModuleStates[2]);
     mBackRight.setDesiredState(swerveModuleStates[3]);
 
+  }
+
+
+  public void autoAlign(){
+    Pose2d pose = getPose();
+    System.out.println(pose.getX());
+    System.out.println(pose.getY());
+    LimelightHelpers.SetRobotOrientation("limelight", -mGyro.getAngle(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
+      Pose2d posee = mt2.pose;
+      if(mt2.tagCount == 1 || mt2.tagCount == 2) {
+      double x = posee.getX();
+      double y = posee.getY();
+      double fieldAngle = Math.atan2(y, x);
+      double turnNeed = Math.toDegrees(fieldAngle + Math.toRadians(mGyro.getAngle()));
+      System.out.println(turnNeed); 
+    }
   }
 
   /**

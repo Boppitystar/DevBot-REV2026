@@ -20,8 +20,8 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static final class DriveConstants{ 
     //allowed max speeds
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
-    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; //rad/s 
+    public static final double MAX_SPEED_METERS_PER_SECOND = 1; //4.8;
+    public static final double MAX_ANGULAR_SPEED = Math.PI; //2 * Math.PI; //rad/s 
 
     //Chassis config - width, depth, CAN IDS and angular offset values in Designdoc.md
   
@@ -42,6 +42,7 @@ public final class Constants {
     public static final double FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = 0;
     public static final double BACK_LEFT_CHASSIS_ANGULAR_OFFSET = -Math.PI/2;
     public static final double BACK_RIGHT_CHASSIS_ANGULAR_OFFSET = -Math.PI;
+    
     
     //SPARK MAX CAN IDs 
     public static final int FRONT_LEFT_DRIVING_CAN_ID = 5;
