@@ -53,7 +53,6 @@ public class DriveSubsystem extends SubsystemBase {
   //mGyro sensor/IMU (usb input type to roborio)
   private final AHRS mGyro = new AHRS(NavXComType.kUSB1); 
   private double fieldheading;
-
   //Odometry class for tracking robot pose 
   SwerveDriveOdometry Odometry = new SwerveDriveOdometry(
     DriveConstants.DriveKinematics,

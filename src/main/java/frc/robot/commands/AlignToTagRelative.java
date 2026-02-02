@@ -18,15 +18,14 @@ public class AlignToTagRelative extends Command {
   private boolean isRightScore;
   private Timer dontSeeTagTimer, stopTimer;
   private DriveSubsystem mDrivebase;
-  private double tagID = -1;
+  private double TURN;
 
   //command requires left or right side of april tag 
-  public AlignToTagRelative(boolean isRightScore, DriveSubsystem Drivebase) {
+  public AlignToTagRelative(DriveSubsystem Drivebase) {
     mXController = new PIDController(Constants.AutoConstants.X_TAG_ALIGNMENT_P, 0.0, 0);  // Vertical movement
     mYController = new PIDController(Constants.AutoConstants.Y_TAG_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
     mRotController = new PIDController(Constants.AutoConstants.ROT_TAG_ALIGNMENT_P, 0, 0);  // Rotation
-   
-    this.isRightScore = isRightScore; 
+    
     this.mDrivebase = Drivebase;
     addRequirements(mDrivebase); //only one drive subsystem instanstiated 
   }
@@ -50,14 +49,12 @@ public class AlignToTagRelative extends Command {
     : -Constants.AutoConstants.Y_SETPOINT_TAG_ALIGNMENT);
     mYController.setTolerance(Constants.AutoConstants.Y_TOLERANCE_TAG_ALIGNMENT);
 
-    tagID = LimelightHelpers.getFiducialID("");
   }
 
   @Override
   public void execute() {
-    double TURN = Units.degreesToRadians(mDrivebase.getTurn());
+    TURN = Units.degreesToRadians(mDrivebase.getTurn());
     double x = MathUtil.clamp(100*TURN, -Math.PI, Math.PI);
-
     mDrivebase.driveChassisSpeeds(0, 0, x, false);
     SmartDashboard.putNumber("poseValidTimer", stopTimer.get());
   }
@@ -69,9 +66,7 @@ public class AlignToTagRelative extends Command {
 
   @Override
   public boolean isFinished() {
-    // Requires the robot to stay in the correct position for 0.3 seconds, as long as it gets a tag in the camera
-    return this.dontSeeTagTimer.hasElapsed(Constants.AutoConstants.DONT_SEE_TAG_WAIT_TIME) ||
-        stopTimer.hasElapsed(Constants.AutoConstants.POSE_VALIDATION_TIME);
+      return TURN < 1.5 && TURN > - 1.5;
   }
 }
 
