@@ -124,7 +124,7 @@ public class DriveSubsystem extends SubsystemBase {
     getTurn();
     driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
   }
-  public void getTurn() {
+  public double getTurn() {
     LimelightHelpers.SetRobotOrientation("limelight", -mGyro.getAngle(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
       Pose2d posee = mt2.pose;
@@ -144,6 +144,7 @@ public class DriveSubsystem extends SubsystemBase {
       turnneed = turnneed - 360;
     }
     System.out.println(turnneed); 
+    return turnneed;
     
    } 
   

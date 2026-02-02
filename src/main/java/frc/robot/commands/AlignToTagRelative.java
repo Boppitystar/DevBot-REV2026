@@ -1,6 +1,8 @@
 package frc.robot.commands; 
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 //import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -53,30 +55,10 @@ public class AlignToTagRelative extends Command {
 
   @Override
   public void execute() {
-    if (LimelightHelpers.getTV("") && LimelightHelpers.getFiducialID("") == tagID) {
-      this.dontSeeTagTimer.reset();
+    double TURN = Units.degreesToRadians(mDrivebase.getTurn());
+    double x = MathUtil.clamp(100*TURN, -Math.PI, Math.PI);
 
-      double[] positions = LimelightHelpers.getBotPose_TargetSpace("");
-      SmartDashboard.putNumber("x", positions[2]);
-
-      //PID controllers for position to speed 
-      double xOutput = -mXController.calculate(positions[2]);
-      double yOutput = -mYController.calculate(positions[0]);
-      double rotOutput= -mRotController.calculate(positions[4]); //TODO:test why they are negative  
-      
-      SmartDashboard.putNumber("xspeed", xOutput);
-
-      //feeds the drive method the controller output which is then clamped (theory can be wrong)
-      mDrivebase.driveChassisSpeeds(xOutput, yOutput, rotOutput, false);
-
-      //checks if aligned, if not restarts timer to restart process
-      if (!mRotController.atSetpoint() || !mYController.atSetpoint() || !mXController.atSetpoint()) {
-        stopTimer.reset();
-      }
-      } else {
-        mDrivebase.driveChassisSpeeds(0,0, 0, false);
-      }
-
+    mDrivebase.driveChassisSpeeds(0, 0, x, false);
     SmartDashboard.putNumber("poseValidTimer", stopTimer.get());
   }
 
