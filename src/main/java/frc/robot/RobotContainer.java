@@ -69,7 +69,7 @@ public class RobotContainer {
       .whileTrue(mDriveSubsystem.defensePosition());
     
     //zero gyro
-    mDriverController.start()
+    mDriverController.y()
       .whileTrue(mDriveSubsystem.resetGyro()); 
 
     //schedule align to robot relative command when left bumper is pressed

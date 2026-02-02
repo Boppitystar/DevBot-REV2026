@@ -21,7 +21,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
 
@@ -51,6 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   //mGyro sensor/IMU (usb input type to roborio)
   private final AHRS mGyro = new AHRS(NavXComType.kUSB1); 
+  private double fieldheading;
 
   //Odometry class for tracking robot pose 
   SwerveDriveOdometry Odometry = new SwerveDriveOdometry(
@@ -80,6 +82,13 @@ public class DriveSubsystem extends SubsystemBase {
             mBackLeft.getPosition(),
             mBackRight.getPosition()
         });
+        double matchTime = DriverStation.getMatchTime();
+    
+    // Publish to NetworkTables
+    SmartDashboard.putNumber("Timer", matchTime);
+    
+      
+
   }
 
   /**
@@ -116,7 +125,7 @@ public class DriveSubsystem extends SubsystemBase {
     driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
   }
   public void getTurn() {
-    LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation("limelight", -mGyro.getAngle(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
       Pose2d posee = mt2.pose;
       if(mt2.tagCount == 1 || mt2.tagCount == 2) {
@@ -124,12 +133,20 @@ public class DriveSubsystem extends SubsystemBase {
       double y = posee.getY();
       double hubx = 4.6228 - x;
     double huby = 4.064 - y;
-    double fieldheading = Math.atan2(huby, hubx);
-    double turnneed = Math.toDegrees(fieldheading + mGyro.getAngle());
+    fieldheading = Math.atan2(huby, hubx); }
+    else {
+      System.out.println("no targets are visible");
+      fieldheading = fieldheading;
+    }
+    double turnneed = Math.toDegrees(fieldheading) + 90 + mGyro.getAngle();
+    System.out.println(mGyro.getAngle());
+    if (turnneed > 180) {
+      turnneed = turnneed - 360;
+    }
     System.out.println(turnneed); 
     
    } 
-  }
+  
 
   public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
     // clamps speed to be within max/min range 
