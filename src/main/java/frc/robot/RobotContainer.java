@@ -80,7 +80,7 @@ public class RobotContainer {
           mDriverController.getLeftY(), 
           //LimelightHelpers.getTY("limelight")*-0.1, 
           mDriverController.getLeftX(), 
-          LimelightHelpers.getTX("limelight")* 0.15, 
+          LimelightHelpers.getTX("limelight")* 0.08, //0.15 for 3 m/s 
           false
         ), mDriveSubsystem
     ));
