@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlignToTagRelative;
 import frc.robot.commands.Autos;
@@ -11,8 +12,12 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,7 +51,7 @@ public class RobotContainer {
                 MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND),
                 MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND),
                 MathUtil.applyDeadband(mDriverController.getRightX(), OperatorConstants.DRIVE_DEADBAND),
-                false),
+                true),
             mDriveSubsystem));
   }
 
@@ -72,13 +77,26 @@ public class RobotContainer {
     mDriverController.start()
       .whileTrue(mDriveSubsystem.resetGyro()); 
 
+    //align to hub TODO:MUST TEST LOGIC IDK IF IT WORKS 
+    mDriverController.y()
+      .whileTrue(mDriveSubsystem.alignDrive(mDriverController, () -> DriveConstants.getHubPose().toPose2d()));
+
+    //print ferry distance 
+    mDriverController.b()
+      .whileTrue(mDriveSubsystem.ferryDistance());
+    
+    //print hub distance 
+    mDriverController.a()
+      .whileTrue(mDriveSubsystem.hubDistance());
+
     //schedule align to robot relative command when left bumper is pressed
    // mDriverController.y()
     //  .onTrue(new AlignToTagRelative(false, mDriveSubsystem).withTimeout(3));
     
-    mDriverController.x()
-      .onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
+   // mDriverController.x()
+      //.onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
 
+    
     
   }
 
@@ -91,4 +109,5 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return Autos.exampleAuto(m_exampleSubsystem);
   }
+
 }
