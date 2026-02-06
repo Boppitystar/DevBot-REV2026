@@ -12,6 +12,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -33,6 +34,11 @@ public class RobotContainer {
 
   private final CommandXboxController mDriverController =
     new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER);
+  
+  //make joystick input more gentle 
+  private final SlewRateLimiter mxSpeedLimiter = new SlewRateLimiter(2);
+  private final SlewRateLimiter mySpeedLimiter = new SlewRateLimiter(2);
+  private final SlewRateLimiter mrotSpeedLimiter = new SlewRateLimiter(2);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -47,7 +53,7 @@ public class RobotContainer {
                 MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND),
                 MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND),
                 MathUtil.applyDeadband(mDriverController.getRightX(), OperatorConstants.DRIVE_DEADBAND),
-                false),
+                true),
             mDriveSubsystem));
   }
 
@@ -66,7 +72,7 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     //schedule defense position when driver controller right bumper is pressed 
-    mDriverController.leftTrigger()
+    mDriverController.back()
       .whileTrue(mDriveSubsystem.defensePosition());
     
     //zero gyro
@@ -81,14 +87,27 @@ public class RobotContainer {
           //LimelightHelpers.getTY("limelight")*-0.1, 
           mDriverController.getLeftX(), 
           LimelightHelpers.getTX("limelight")* 0.08, //0.15 for 3 m/s 
-          false
+          false //TODO: test if making true is fine 
         ), mDriveSubsystem
     ));
 
     mDriverController.rightBumper()
-      .whileTrue(mVisionSubsystem.estimateDistanceToHub());
+      .whileTrue(mDriveSubsystem.gyroHeading());
 
     
+     //TODO: test slew rate limiter 
+    mDriverController.a()
+    .whileTrue(new RunCommand(
+      () -> mDriveSubsystem.driveJoystick(
+          mxSpeedLimiter.calculate(MathUtil.applyDeadband(mDriverController.getLeftY(), OperatorConstants.DRIVE_DEADBAND)), 
+          //LimelightHelpers.getTY("limelight")*-0.1, 
+                  mySpeedLimiter.calculate(MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND)), 
+          LimelightHelpers.getTX("limelight")* 0.08, //0.15 for 3 m/s 
+          false //TODO: test if making true is fine 
+        ), mDriveSubsystem
+    ));
+
+
     //schedule align to robot relative command when left bumper is pressed
    // mDriverController.y()
     //  .onTrue(new AlignToTagRelative(false, mDriveSubsystem).withTimeout(3));
@@ -98,7 +117,6 @@ public class RobotContainer {
 
     
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

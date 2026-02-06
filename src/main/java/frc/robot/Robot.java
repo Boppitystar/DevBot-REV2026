@@ -85,6 +85,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    m_robotContainer.mDriveSubsystem.zeroHeading(); //TODO:TEST THIS OR FIND OTHER FIX 
+
   }
 
   /** This function is called periodically during operator control. */

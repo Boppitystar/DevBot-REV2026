@@ -12,6 +12,7 @@ import limelight.networktables.LimelightPoseEstimator;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.networktables.LimelightSettings.LEDMode;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -33,6 +34,11 @@ public class VisionSubsystem extends SubsystemBase {
 
       poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
 
+    }
+
+    public double autoAlignRotation(){
+        double targetAngularVelocity = 0.08*LimelightHelpers.getTX("limelight");
+        return targetAngularVelocity; 
     }
 
     public void getDistanceToHub(){
