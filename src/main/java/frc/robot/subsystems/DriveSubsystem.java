@@ -37,6 +37,9 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers;
 
+import dev.doglog.DogLog;
+
+
 public class DriveSubsystem extends SubsystemBase {
   //create 4 MAXSwerveModules 
   
@@ -107,17 +110,19 @@ public class DriveSubsystem extends SubsystemBase {
     //adding field map to smart dashboard 
     field2d.setRobotPose(mPoseEstimator.getEstimatedPosition());
     SmartDashboard.putData(field2d);
-  
-  //OLD ODOMETRY UPDATE: pdates Odometry in periodic block 
-   /*  Odometry.update(
-        Rotation2d.fromDegrees(-mGyro.getAngle()),
-        new SwerveModulePosition[] {
-            mFrontLeft.getPosition(),
-            mFrontRight.getPosition(),
-            mBackLeft.getPosition(),
-            mBackRight.getPosition()
-        });
-        */
+
+    DogLog.log("hub distance", getHubDistance(), "meters");
+    DogLog.log("ferry distance", getFerryDistance(), "meters");
+    //OLD ODOMETRY UPDATE: pdates Odometry in periodic block 
+    /*  Odometry.update(
+          Rotation2d.fromDegrees(-mGyro.getAngle()),
+          new SwerveModulePosition[] {
+              mFrontLeft.getPosition(),
+              mFrontRight.getPosition(),
+              mBackLeft.getPosition(),
+              mBackRight.getPosition()
+          });
+          */  
   }
 
   /**
@@ -354,7 +359,7 @@ public class DriveSubsystem extends SubsystemBase {
         if (
             (Math.abs(wrappedAngleDeg) < DriveConstants.epsilonAngleToGoal.in(Degrees)) // if facing goal already
             && Math.hypot(controllerVelX, controllerVelY) < OperatorConstants.DRIVE_DEADBAND) {
-               driveJoystick(0, 0, 0, true); //TODO:IDK HOW FIELD RELATIVE WILL WOKR 
+               driveJoystick(controllerVelX, controllerVelY, 0, true); //TODO:IDK HOW FIELD RELATIVE WILL WOKR 
             } else {
             double rotationalRate = DriveConstants.rotationController.calculate(currentAngle.getRadians(), desiredAngle.getRadians());
               driveJoystick(controllerVelX, controllerVelY, rotationalRate, true);

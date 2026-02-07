@@ -44,12 +44,12 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    double robotRps = Units.degreesToRotations(m_robotContainer.mDriveSubsystem.getTurnRate());
+   /*  double robotRps = Units.degreesToRotations(m_robotContainer.mDriveSubsystem.getTurnRate());
     var LimelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
     if (LimelightMeasurement != null && LimelightMeasurement.tagCount > 0 && Math.abs(robotRps) < 20){ //see LL and rps low
         m_robotContainer.mDriveSubsystem.resetOdometry(LimelightMeasurement.pose);
-    }
+    }. */
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
