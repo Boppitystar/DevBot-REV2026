@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 
+import dev.doglog.DogLog;
+
 public class DriveSubsystem extends SubsystemBase {
   //create 4 MAXSwerveModules 
   
@@ -86,6 +88,8 @@ public class DriveSubsystem extends SubsystemBase {
    //adding field map to smart dashboard 
     field2d.setRobotPose(Odometry.getPoseMeters());
     SmartDashboard.putData(field2d);
+    DogLog.log("gyro value", getHeading(), "degrees");
+
       }
 
   /**
@@ -185,7 +189,7 @@ public class DriveSubsystem extends SubsystemBase {
   //TODO: test if this works 
   public Rotation2d getGyroRotation(){
     //TODO: set inverted or not
-    return Rotation2d.fromDegrees(-mGyro.getAngle());
+    return Rotation2d.fromDegrees(mGyro.getAngle());
   }
 
 
