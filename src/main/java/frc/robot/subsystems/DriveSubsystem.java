@@ -71,9 +71,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   //Odometry class for tracking robot pose 
   SwerveDriveOdometry Odometry = new SwerveDriveOdometry(
-    DriveConstants.DriveKinematics,
-    Rotation2d.fromDegrees(-mGyro.getAngle()), //inversion as NavX is CCW+
-    new SwerveModulePosition[] {
+      DriveConstants.DriveKinematics,
+      getGyroRotation(), //inversion as NavX is CCW+
+      new SwerveModulePosition[] {
         mFrontLeft.getPosition(),
         mFrontRight.getPosition(),
         mBackLeft.getPosition(),
@@ -85,7 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveDrivePoseEstimator mPoseEstimator =
       new SwerveDrivePoseEstimator(
           DriveConstants.DriveKinematics,
-          Rotation2d.fromDegrees(-mGyro.getAngle()),
+          getGyroRotation(),
           new SwerveModulePosition[] {
             mFrontLeft.getPosition(),
             mFrontRight.getPosition(),
@@ -143,7 +143,7 @@ public class DriveSubsystem extends SubsystemBase {
   //TODO: change to mPoseEstimator When it works 
   public void resetOdometry(Pose2d pose) {
     Odometry.resetPosition(
-        Rotation2d.fromDegrees(-mGyro.getAngle()),
+        getGyroRotation(),
         new SwerveModulePosition[] {
             mFrontLeft.getPosition(),
             mFrontRight.getPosition(),
@@ -238,7 +238,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(-mGyro.getAngle()).getDegrees();
+    return getGyroRotation().getDegrees();
   }
 
   /**
@@ -248,11 +248,15 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return mGyro.getRate() * (DriveConstants.GYRO_REVERSED ? -1.0 : 1.0);
   }
+  
+  public Rotation2d getGyroRotation(){
+    return Rotation2d.fromDegrees(mGyro.getAngle());
+  }
 
     /** Updates the field relative position of the robot. */
   public void updateVisionOdometry() {
     mPoseEstimator.update(
-          Rotation2d.fromDegrees(-mGyro.getAngle()),
+          getGyroRotation(),
         new SwerveModulePosition[] {
           mFrontLeft.getPosition(),
           mFrontRight.getPosition(),
@@ -320,6 +324,13 @@ public class DriveSubsystem extends SubsystemBase {
   public void printFerryDistance(){
     System.out.println("Ferry distance" + getFerryDistance());
   }
+  public double getHubDistance() {
+        return getShotDistance(DriveConstants.getHubPose().toPose2d().getTranslation());
+    }
+
+  public void printHubDistance() {
+    System.out.println("Hub distance" + getHubDistance());
+  }
 
   public double getShotDistance(Translation2d targetPose) {
         Pose2d drivePose = getPose();
@@ -329,14 +340,7 @@ public class DriveSubsystem extends SubsystemBase {
         return shooterToTargetMeters;
     }
 
-  public double getHubDistance() {
-        return getShotDistance(DriveConstants.getHubPose().toPose2d().getTranslation());
-    }
-
-  public void printHubDistance() {
-    System.out.println("Hub distance" + getHubDistance());
-  }
-  
+ 
   public Command alignDrive(CommandXboxController controller, Supplier<Pose2d> targetPoseSupplier) {
 
     return run( ()-> {
