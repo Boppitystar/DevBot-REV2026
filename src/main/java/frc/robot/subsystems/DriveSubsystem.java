@@ -186,9 +186,8 @@ public class DriveSubsystem extends SubsystemBase {
     mGyro.reset();
   }
 
-  //TODO: test if this works 
+
   public Rotation2d getGyroRotation(){
-    //TODO: set inverted or not
     return Rotation2d.fromDegrees(mGyro.getAngle());
   }
 

@@ -91,9 +91,6 @@ public class RobotContainer {
         ), mDriveSubsystem
     ));
 
-    mDriverController.rightBumper()
-      .whileTrue(mDriveSubsystem.gyroHeading());
-
     
      //TODO: test slew rate limiter 
     mDriverController.a()
@@ -104,16 +101,7 @@ public class RobotContainer {
                   mySpeedLimiter.calculate(MathUtil.applyDeadband(mDriverController.getLeftX(), OperatorConstants.DRIVE_DEADBAND)), 
           LimelightHelpers.getTX("limelight")* 0.08, //0.15 for 3 m/s 
           false //TODO: test if making true is fine 
-        ), mDriveSubsystem
-    ));
-
-
-    //schedule align to robot relative command when left bumper is pressed
-   // mDriverController.y()
-    //  .onTrue(new AlignToTagRelative(false, mDriveSubsystem).withTimeout(3));
-    
-    ///mDriverController.x()
-      //.onTrue(new AlignToTagRelative(true, mDriveSubsystem).withTimeout(3));
+        ), mDriveSubsystem));
 
     
   }
