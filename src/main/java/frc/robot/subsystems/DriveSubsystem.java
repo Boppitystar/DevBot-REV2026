@@ -13,6 +13,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
+import com.pathplanner.lib.config.RobotConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -63,6 +64,36 @@ public class DriveSubsystem extends SubsystemBase {
         mBackLeft.getPosition(),
         mBackRight.getPosition()
   });
+  RobotConfig config;
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
+    AutoBuilder.configure(
+            this::getPose, // Robot pose supplier
+            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+            ),
+            config, // The robot configuration
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+    );
 
   
   public DriveSubsystem() {
@@ -102,7 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
    * Resets the Odometry to the specified pose.
    * @param pose The pose to which to set the Odometry.
    */
-  public void resetOdometry(Pose2d pose) {
+  public void resetPose(Pose2d pose) {
     Odometry.resetPosition(
         Rotation2d.fromDegrees(-mGyro.getAngle()),
         new SwerveModulePosition[] {
@@ -121,7 +152,7 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedDelivered = yJoystick * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
     double rotDelivered = rotJoystick * DriveConstants.MAX_ANGULAR_SPEED;
     getTurn();
-    driveChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
+    drive(xSpeedDelivered, ySpeedDelivered, rotDelivered, fieldRelative);
   }
   public double getTurn() {
     LimelightHelpers.SetRobotOrientation("limelight", -mGyro.getAngle(), 0, 0, 0, 0, 0);
@@ -148,7 +179,7 @@ public class DriveSubsystem extends SubsystemBase {
    } 
   
 
-  public void driveChassisSpeeds(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
+  public void drive(double xSpeed, double ySpeed, double rotValue, boolean fieldRelative){
     // clamps speed to be within max/min range 
     double xSpeedClamped = MathUtil.clamp(xSpeed, -DriveConstants.MAX_SPEED_METERS_PER_SECOND,DriveConstants.MAX_SPEED_METERS_PER_SECOND); 
     double ySpeedClamped = MathUtil.clamp(ySpeed, -DriveConstants.MAX_SPEED_METERS_PER_SECOND,DriveConstants.MAX_SPEED_METERS_PER_SECOND); 
@@ -239,5 +270,6 @@ public class DriveSubsystem extends SubsystemBase {
         zeroHeading();
       });
   }
+
   
 }

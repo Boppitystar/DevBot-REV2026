@@ -25,6 +25,7 @@ public class AlignToTagRelative extends Command {
     mXController = new PIDController(Constants.AutoConstants.X_TAG_ALIGNMENT_P, 0.0, 0);  // Vertical movement
     mYController = new PIDController(Constants.AutoConstants.Y_TAG_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
     mRotController = new PIDController(Constants.AutoConstants.ROT_TAG_ALIGNMENT_P, 0, 0);  // Rotation
+
     
     this.mDrivebase = Drivebase;
     addRequirements(mDrivebase); //only one drive subsystem instanstiated 
@@ -55,13 +56,13 @@ public class AlignToTagRelative extends Command {
   public void execute() {
     TURN = Units.degreesToRadians(mDrivebase.getTurn());
     double x = MathUtil.clamp(100*TURN, -Math.PI, Math.PI);
-    mDrivebase.driveChassisSpeeds(0, 0, x, false);
+    mDrivebase.drive(0, 0, x, false);
     SmartDashboard.putNumber("poseValidTimer", stopTimer.get());
   }
 
   @Override
   public void end(boolean interrupted) {
-    mDrivebase.driveChassisSpeeds(0,0, 0, false); //TODO: test to see if true/change back to field relative works 
+    mDrivebase.drive(0,0, 0, false); //TODO: test to see if true/change back to field relative works 
   }
 
   @Override

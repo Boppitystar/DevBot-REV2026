@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
     var LimelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
     if (LimelightMeasurement != null && LimelightMeasurement.tagCount > 0 && Math.abs(robotRps) < 20){ //see LL and rps low
-        m_robotContainer.mDriveSubsystem.resetOdometry(LimelightMeasurement.pose);
+        m_robotContainer.mDriveSubsystem.resetPose(LimelightMeasurement.pose);
     }
   }
 
