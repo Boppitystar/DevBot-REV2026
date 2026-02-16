@@ -23,13 +23,13 @@ public final class DriveConfig {
             drivingConfig
             .idleMode(IdleMode.kBrake).smartCurrentLimit(50);
             drivingConfig.encoder
-            .positionConversionFactor(drivingFactor)
-            .velocityConversionFactor(drivingFactor/60.0);
+            .positionConversionFactor(1)
+            .velocityConversionFactor(1);
             drivingConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .pid(0.04, 0, 0)  
+            .pid(0.00004, 0, 0.00005)  
             .outputRange(-1,1)  //speed setpoint to actual velocity  
-            .feedForward.kV(drivingVelocityFeedForward);
+            .feedForward.kV(0.00198);
             
             
             turningConfig

@@ -69,16 +69,16 @@ public class DriveSubsystem extends SubsystemBase {
   private final Field2d field2d = new Field2d();
 
 
-  //Odometry class for tracking robot pose 
-  SwerveDriveOdometry Odometry = new SwerveDriveOdometry(
-      DriveConstants.DriveKinematics,
-      getGyroRotation(), //inversion as NavX is CCW+
-      new SwerveModulePosition[] {
-        mFrontLeft.getPosition(),
-        mFrontRight.getPosition(),
-        mBackLeft.getPosition(),
-        mBackRight.getPosition()
-  });
+  // //Odometry class for tracking robot pose 
+  // SwerveDriveOdometry Odometry = new SwerveDriveOdometry(
+  //     DriveConstants.DriveKinematics,
+  //     getGyroRotation(), //inversion as NavX is CCW+
+  //     new SwerveModulePosition[] {
+  //       mFrontLeft.getPosition(),
+  //       mFrontRight.getPosition(),
+  //       mBackLeft.getPosition(),
+  //       mBackRight.getPosition()
+  // });
 
   /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
   below are robot specific, and should be tuned. */
@@ -93,8 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
             mBackRight.getPosition()
           },
           new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+          VecBuilder.fill(0.6, 0.6, Units.degreesToRadians(5)),
+          VecBuilder.fill(0.6, 0.6, Units.degreesToRadians(30)));
 
 
   
@@ -112,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData(field2d);
 
     DogLog.log("hub distance", getHubDistance(), "meters");
-    DogLog.log("ferry distance", getFerryDistance(), "meters");
+   // DogLog.log("ferry distance", getFerryDistance(), "meters");
     //OLD ODOMETRY UPDATE: pdates Odometry in periodic block 
     /*  Odometry.update(
           Rotation2d.fromDegrees(-mGyro.getAngle()),
@@ -141,8 +141,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the Odometry.
    */
   //TODO: change to mPoseEstimator When it works 
-  public void resetOdometry(Pose2d pose) {
-    Odometry.resetPosition(
+  public void resetPoseEstimator(Pose2d pose) {
+    mPoseEstimator.resetPosition(
         getGyroRotation(),
         new SwerveModulePosition[] {
             mFrontLeft.getPosition(),
@@ -265,11 +265,11 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
 
-    boolean useMegaTag2 = true; //set to false to use MegaTag1
+    boolean useMegaTag2 = false; //set to false to use MegaTag1
     boolean doRejectUpdate = false;
     if(useMegaTag2 == false)
     {
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight");
       
       if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
       {
@@ -289,16 +289,17 @@ public class DriveSubsystem extends SubsystemBase {
 
       if(!doRejectUpdate)
       {
-        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.2,.2,9999999));
         mPoseEstimator.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
       }
     }
     else if (useMegaTag2 == true)
+    //mPoseEstimator.getEstimatedPosition().getRotation().getDegrees()
     {
-      LimelightHelpers.SetRobotOrientation("limelight", mPoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+      LimelightHelpers.SetRobotOrientation("limelight", 180 + mGyro.getAngle(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
       if(Math.abs(mGyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;
@@ -309,7 +310,7 @@ public class DriveSubsystem extends SubsystemBase {
       }
       if(!doRejectUpdate)
       {
-        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.2,.2,9999999));
         mPoseEstimator.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);
