@@ -5,6 +5,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import limelight.Limelight;
@@ -58,6 +59,19 @@ public class VisionSubsystem extends SubsystemBase {
         System.out.println("distance:" + distanceToGoal);
     }
 
+    public double getTA(){
+        return LimelightHelpers.getTA("limelight");
+    }
+
+    public double getDistanceToTag(){
+        double ta = getTA();
+        double scale = 18669.31;
+        double distance = (Math.pow(scale/ta, 1/1.93183))/100 - 0.30; 
+
+        return distance; 
+    
+    }
+
     public Command estimateDistanceToHub(){
         return run(
         () -> {
@@ -67,6 +81,8 @@ public class VisionSubsystem extends SubsystemBase {
     
     @Override
     public void periodic(){
+        SmartDashboard.putNumber("Testing/distance", getDistanceToTag());
+        SmartDashboard.putNumber("Testing/targetArea", getTA());
     }
     
 }
