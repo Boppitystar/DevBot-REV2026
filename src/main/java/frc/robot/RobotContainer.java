@@ -77,18 +77,20 @@ public class RobotContainer {
     //zero gyro
     mDriverController.start()
       .whileTrue(mDriveSubsystem.resetGyro()); 
+    
+     mDriverController.povUp()
+      .whileTrue(mDriveSubsystem.incrementGain()); 
+   
+      mDriverController.povDown()
+      .whileTrue(mDriveSubsystem.decrementGain()); 
+
 
     //align to hub TODO:MUST TEST LOGIC IDK IF IT WORKS 
     mDriverController.y()
       .whileTrue(mDriveSubsystem.alignDrive(mDriverController, () -> DriveConstants.getHubPose().toPose2d()));
-
-    //print ferry distance 
-    mDriverController.b()
-      .whileTrue(mDriveSubsystem.ferryDistance());
     
-    //print hub distance 
-    mDriverController.a()
-      .whileTrue(mDriveSubsystem.hubDistance());
+    mDriverController.x()
+      .whileTrue(mDriveSubsystem.alignTestDrive(mDriverController, () -> DriveConstants.getHubPose().toPose2d()));
 
     //schedule align to robot relative command when left bumper is pressed
    // mDriverController.y()

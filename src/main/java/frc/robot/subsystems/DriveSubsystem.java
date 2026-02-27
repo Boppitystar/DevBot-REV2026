@@ -16,6 +16,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 
@@ -33,8 +34,10 @@ import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.configs.DriveConfig;
 import frc.robot.LimelightHelpers;
 
 import dev.doglog.DogLog;
@@ -93,14 +96,16 @@ public class DriveSubsystem extends SubsystemBase {
             mBackRight.getPosition()
           },
           new Pose2d(),
-          VecBuilder.fill(0.6, 0.6, Units.degreesToRadians(5)),
+          VecBuilder.fill(1,1, Units.degreesToRadians(5)),
           VecBuilder.fill(0.6, 0.6, Units.degreesToRadians(30)));
 
-
+// 0.6 and 5 
   
   public DriveSubsystem() {
     //usage reporting for MAXSwerve template 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
+    resetPoseEstimator(getAllianceStartingPose());
+
   }
 
   @Override
@@ -111,18 +116,17 @@ public class DriveSubsystem extends SubsystemBase {
     field2d.setRobotPose(mPoseEstimator.getEstimatedPosition());
     SmartDashboard.putData(field2d);
 
-    DogLog.log("hub distance", getHubDistance(), "meters");
-   // DogLog.log("ferry distance", getFerryDistance(), "meters");
-    //OLD ODOMETRY UPDATE: pdates Odometry in periodic block 
-    /*  Odometry.update(
-          Rotation2d.fromDegrees(-mGyro.getAngle()),
-          new SwerveModulePosition[] {
-              mFrontLeft.getPosition(),
-              mFrontRight.getPosition(),
-              mBackLeft.getPosition(),
-              mBackRight.getPosition()
-          });
-          */  
+    SmartDashboard.putNumber("Driving/hub distance", getHubDistance());
+    SmartDashboard.putNumber("Driving/gyro", mGyro.getAngle());
+    SmartDashboard.putNumber("Driving/heading", getHeading());
+    SmartDashboard.putNumber("Driving/Pose X", getPose().getX());
+    SmartDashboard.putNumber("Driving/Pose Y", getPose().getY());
+    SmartDashboard.putString("Driving/Alliance", Constants.getCurrentAlliance().toString());
+    SmartDashboard.putNumber("Driving/HubPoseX", DriveConstants.getHubPose().getX());
+    SmartDashboard.putNumber("Driving/HubPoseY", DriveConstants.getHubPose().getY());
+    SmartDashboard.putNumber("Driving/kp", DriveConstants.ROTATION_KP);
+
+
   }
 
   /**
@@ -136,11 +140,23 @@ public class DriveSubsystem extends SubsystemBase {
     return mPoseEstimator.getEstimatedPosition().getRotation();
   }
 
+  private Pose2d getAllianceStartingPose() {
+    if (Constants.getCurrentAlliance() == Alliance.Blue) {
+        return new Pose2d(
+            new Translation2d(1.0, 4.0),   // TODO: change this 
+            Rotation2d.fromDegrees(0)
+        );
+    } else {
+        return new Pose2d(
+            new Translation2d(16.0, 4.0),  // TODO: change this to acc 
+            Rotation2d.fromDegrees(180)
+        );
+    }
+}
   /**
    * Resets the Odometry to the specified pose.
    * @param pose The pose to which to set the Odometry.
    */
-  //TODO: change to mPoseEstimator When it works 
   public void resetPoseEstimator(Pose2d pose) {
     mPoseEstimator.resetPosition(
         getGyroRotation(),
@@ -173,7 +189,7 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.DriveKinematics.toSwerveModuleStates(
       fieldRelative 
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedClamped, ySpeedClamped, 
-          rotDelivered, mPoseEstimator.getEstimatedPosition().getRotation())
+          rotDelivered, getGyroRotation())
         
         : new ChassisSpeeds(xSpeedClamped, ySpeedClamped, rotDelivered));
     
@@ -269,7 +285,9 @@ public class DriveSubsystem extends SubsystemBase {
     boolean doRejectUpdate = false;
     if(useMegaTag2 == false)
     {
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight");
+ 
+      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight"); 
+       // }
       
       if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
       {
@@ -277,7 +295,7 @@ public class DriveSubsystem extends SubsystemBase {
         {
           doRejectUpdate = true;
         }
-        if(mt1.rawFiducials[0].distToCamera > 3)
+        if(mt1.rawFiducials[0].distToCamera > 7)
         {
           doRejectUpdate = true;
         }
@@ -289,7 +307,7 @@ public class DriveSubsystem extends SubsystemBase {
 
       if(!doRejectUpdate)
       {
-        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.2,.2,9999999));
+        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5)));
         mPoseEstimator.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
@@ -297,9 +315,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
     else if (useMegaTag2 == true)
     //mPoseEstimator.getEstimatedPosition().getRotation().getDegrees()
+    //TODO: checkif using gyro angle works 
     {
-      LimelightHelpers.SetRobotOrientation("limelight", 180 + mGyro.getAngle(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
+      LimelightHelpers.SetRobotOrientation("limelight", mPoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+         
       if(Math.abs(mGyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;
@@ -310,7 +330,7 @@ public class DriveSubsystem extends SubsystemBase {
       }
       if(!doRejectUpdate)
       {
-        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.2,.2,9999999));
+        mPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5)));
         mPoseEstimator.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);
@@ -321,24 +341,18 @@ public class DriveSubsystem extends SubsystemBase {
   public double getFerryDistance() {
       return getShotDistance(DriveConstants.getFerryPose(getPose().getTranslation()).toPose2d().getTranslation());
   }
-  
-  public void printFerryDistance(){
-    System.out.println("Ferry distance" + getFerryDistance());
-  }
+
   public double getHubDistance() {
         return getShotDistance(DriveConstants.getHubPose().toPose2d().getTranslation());
     }
 
-  public void printHubDistance() {
-    System.out.println("Hub distance" + getHubDistance());
-  }
 
   public double getShotDistance(Translation2d targetPose) {
         Pose2d drivePose = getPose();
         double centerToTargetMeters = drivePose.getTranslation().getDistance(targetPose);
-        double centerToShooterMeters = DriveConstants.shooterSideOffset;
-        double shooterToTargetMeters = Math.sqrt(Math.pow(centerToTargetMeters, 2.0) - Math.pow(centerToShooterMeters, 2.0));
-        return shooterToTargetMeters;
+        // double centerToShooterMeters = DriveConstants.shooterSideOffset;
+        // double shooterToTargetMeters = Math.sqrt(Math.pow(centerToTargetMeters, 2.0) - Math.pow(centerToShooterMeters, 2.0));
+        return centerToTargetMeters;
     }
 
  
@@ -372,6 +386,38 @@ public class DriveSubsystem extends SubsystemBase {
       });
   }
 
+  public Command alignTestDrive(CommandXboxController controller, Supplier<Pose2d> targetPoseSupplier) {
+
+    return run(() -> {
+
+        double controllerVelX =MathUtil.applyDeadband( controller.getLeftY(), OperatorConstants.DRIVE_DEADBAND);
+        double controllerVelY = MathUtil.applyDeadband(controller.getLeftX(),OperatorConstants.DRIVE_DEADBAND);
+
+
+        Pose2d drivePose = getPose();
+        Pose2d targetPose = targetPoseSupplier.get();
+        Translation2d robotToTarget = targetPose.getTranslation().minus(drivePose.getTranslation());
+        Rotation2d desiredAngle = robotToTarget.getAngle();
+        Rotation2d currentAngle = drivePose.getRotation(); 
+        Rotation2d deltaAngle = currentAngle.minus(desiredAngle);
+        double deltaAngleDegrees = deltaAngle.getDegrees();
+        double wrappedAngleDeg = MathUtil.inputModulus(deltaAngle.getDegrees(), -180.0, 180.0);
+        if (
+                (Math.abs(deltaAngleDegrees) < DriveConstants.epsilonAngleToGoal.in(Degrees)) // if facing goal already
+                && Math.hypot(controllerVelX, controllerVelY) < OperatorConstants.DRIVE_DEADBAND) {
+                  driveJoystick(controllerVelX, controllerVelY, 0, true); //TODO:IDK HOW FIELD RELATIVE WILL WOKR 
+                } else {
+                double rotationalRate = DriveConstants.rotationController.calculate(currentAngle.getRadians(), desiredAngle.getRadians());
+                  driveJoystick(controllerVelX, controllerVelY, rotationalRate, true);
+            }
+          });
+  }
+
+  public void incrementKP(){ DriveConstants.ROTATION_KP += DriveConstants.KP_INCREMENT; };
+
+  public void decrementKP(){ DriveConstants.ROTATION_KP -= DriveConstants.KP_INCREMENT;};
+
+
 
   //command to set module positions to an X shape for defense 
   public Command defensePosition(){
@@ -389,22 +435,22 @@ public class DriveSubsystem extends SubsystemBase {
       });
   }
 
-
-  //TESTS 
-  public Command hubDistance(){
+  public Command incrementGain(){
     return run(
       () -> {
-        printHubDistance();
-      });
-  }
-  public Command ferryDistance(){
-    return run(
-      () -> {
-        printFerryDistance();
+        incrementKP();
       });
   }
 
-           
+  public Command decrementGain(){
+    return run(
+      () -> {
+        decrementKP();
+      });
+  }
 
+
+
+        
   
 }

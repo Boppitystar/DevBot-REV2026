@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.Optional;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,6 +32,16 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * constants are needed, to reduce verbosity (length, complexity).
  */
 public final class Constants {
+  
+  public static final Alliance MANUAL_ALLIANCE = Alliance.Red;
+
+  public static Alliance getCurrentAlliance() {
+
+    return DriverStation.getAlliance().get();
+
+}
+
+
   public static final class DriveConstants{ 
     //allowed max speeds
     public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
@@ -72,14 +83,15 @@ public final class Constants {
 
     public static final boolean GYRO_REVERSED = false;
 
-    //TODO: change measurements to meters 
     public static final double shooterSideOffset = Units.inchesToMeters(6.0);
 
     public static final Transform2d shooterTransform = new Transform2d(Units.inchesToMeters(0.0), shooterSideOffset, new Rotation2d());
 
-    public static final Pose3d redHubPose = new Pose3d(Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Units.inchesToMeters(72.0), new Rotation3d());
-    public static final Pose3d blueHubPose = new Pose3d(Units.inchesToMeters(152.56), Units.inchesToMeters(158.32),  Units.inchesToMeters(72.0), new Rotation3d());
+    public static final Pose3d redHubPose = new Pose3d(Units.inchesToMeters(485.5), Units.inchesToMeters(158.32), Units.inchesToMeters(72.0), new Rotation3d());
+    public static final Pose3d blueHubPose = new Pose3d(Units.inchesToMeters(206), Units.inchesToMeters(158.32),  Units.inchesToMeters(72.0), new Rotation3d());
 
+    public static final Pose3d realRedHubPose = new Pose3d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84), Units.inchesToMeters(72.0), new Rotation3d());
+    public static final Pose3d realBlueHubPose = new Pose3d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84),  Units.inchesToMeters(72.0), new Rotation3d());
     public static final Pose3d redFerryPoseDepot = new Pose3d(14.3, 6, 0, Rotation3d.kZero);
     public static final Pose3d redFerryPoseOutpost = new Pose3d(14.3, 2, 0, Rotation3d.kZero);
     public static final Pose3d blueFerryPoseDepot = new Pose3d(2.1, 2, 0, Rotation3d.kZero);
@@ -88,9 +100,16 @@ public final class Constants {
     public static final Angle epsilonAngleToGoal = Degrees.of(1.0);
 
     public static final Pose3d getHubPose() {
-        Pose3d pose = DriverStation.getAlliance().equals(Optional.of(Alliance.Red)) ? redHubPose : blueHubPose;
-        //Logger.log("HUB POSE", pose);
-        return pose;
+      
+      Pose3d pose; 
+
+      if (Constants.getCurrentAlliance() == Alliance.Blue) {
+         pose = blueHubPose; 
+      } else {
+         pose = redHubPose; 
+      }      
+      //Pose3d pose = DriverStation.getAlliance().equals(Optional.of(Alliance.Red)) ? redHubPose : blueHubPose;
+      return pose;
     }
 
     public static final Pose3d getFerryPose(Translation2d robotPose) {
@@ -110,8 +129,12 @@ public final class Constants {
     }
     public static final PIDController rotationController = getRotationController();
 
+    public static double ROTATION_KP = 1.1;
+    public static final double KP_INCREMENT = 0.01;
+
+
     private static final PIDController getRotationController() {
-        PIDController controller = new PIDController(1.5, 0.0, 0.0);
+        PIDController controller = new PIDController(ROTATION_KP, 0.0, 0.0);
         controller.enableContinuousInput(-Math.PI, Math.PI);
         return controller;
     }
@@ -140,7 +163,7 @@ public final class Constants {
 
   public static final class AutoConstants {
     //add constants here that are not in pathplanner/limelight if needed
-    public static final double X_TAG_ALIGNMENT_P = 0.1; //TODO: tune limelight pid  
+    public static final double X_TAG_ALIGNMENT_P = 0.1; 
     public static final double Y_TAG_ALIGNMENT_P = 0.1; 
     public static final double ROT_TAG_ALIGNMENT_P = 0.1; 
 
