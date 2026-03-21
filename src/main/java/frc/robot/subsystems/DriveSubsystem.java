@@ -119,8 +119,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Driving/hub distance", getHubDistance());
     SmartDashboard.putNumber("Driving/gyro", mGyro.getAngle());
     SmartDashboard.putNumber("Driving/heading", getHeading());
-    SmartDashboard.putNumber("Driving/Pose X", getPose().getX());
-    SmartDashboard.putNumber("Driving/Pose Y", getPose().getY());
+    SmartDashboard.putNumber("Driving/Pose X", getVisionPose().getX());
+    SmartDashboard.putNumber("Driving/Pose Y", getVisionPose().getY());
     SmartDashboard.putString("Driving/Alliance", Constants.getCurrentAlliance().toString());
     SmartDashboard.putNumber("Driving/HubPoseX", DriveConstants.getHubPose().getX());
     SmartDashboard.putNumber("Driving/HubPoseY", DriveConstants.getHubPose().getY());
@@ -133,7 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
    * Returns the currently-estimated pose of the robot.
    * @return The pose.
    */
-  public Pose2d getPose() {
+  public Pose2d getVisionPose() {
     return mPoseEstimator.getEstimatedPosition();
   }
   public Rotation2d getRotationPose2d() {
@@ -339,7 +339,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
   
   public double getFerryDistance() {
-      return getShotDistance(DriveConstants.getFerryPose(getPose().getTranslation()).toPose2d().getTranslation());
+      return getShotDistance(DriveConstants.getFerryPose(getVisionPose().getTranslation()).toPose2d().getTranslation());
   }
 
   public double getHubDistance() {
@@ -348,7 +348,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   public double getShotDistance(Translation2d targetPose) {
-        Pose2d drivePose = getPose();
+        Pose2d drivePose = getVisionPose();
         double centerToTargetMeters = drivePose.getTranslation().getDistance(targetPose);
         // double centerToShooterMeters = DriveConstants.shooterSideOffset;
         // double shooterToTargetMeters = Math.sqrt(Math.pow(centerToTargetMeters, 2.0) - Math.pow(centerToShooterMeters, 2.0));
@@ -362,7 +362,7 @@ public class DriveSubsystem extends SubsystemBase {
         double controllerVelX = MathUtil.applyDeadband(controller.getLeftY(),OperatorConstants.DRIVE_DEADBAND);
         double controllerVelY = MathUtil.applyDeadband(controller.getLeftX(),OperatorConstants.DRIVE_DEADBAND);
 
-        Pose2d drivePose = getPose();
+        Pose2d drivePose = getVisionPose();
         Pose2d targetPose = targetPoseSupplier.get();
         double shooterOffset = -DriveConstants.shooterSideOffset;
         double targetDistance = drivePose.getTranslation().getDistance(targetPose.getTranslation());
@@ -394,7 +394,7 @@ public class DriveSubsystem extends SubsystemBase {
         double controllerVelY = MathUtil.applyDeadband(controller.getLeftX(),OperatorConstants.DRIVE_DEADBAND);
 
 
-        Pose2d drivePose = getPose();
+        Pose2d drivePose = getVisionPose();
         Pose2d targetPose = targetPoseSupplier.get();
         Translation2d robotToTarget = targetPose.getTranslation().minus(drivePose.getTranslation());
         Rotation2d desiredAngle = robotToTarget.getAngle();
